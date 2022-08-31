@@ -38,4 +38,4 @@ urlpatterns = [
     path('change-password/', views.change_password, name='change-password'),
     path('management/', views.management_home, name='management-home'),
     path('management/report/', views.management_report, name='management-report'),
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
