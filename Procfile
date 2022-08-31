@@ -1,0 +1,1 @@
+web: gunicorn revenuemanagement.wsgi --log-file -

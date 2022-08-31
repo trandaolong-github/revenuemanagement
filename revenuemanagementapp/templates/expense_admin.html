@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Danh sách chi tiền{% endblock %}
+
+{% block heading %}Danh sách chi tiền{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-body">
+        <div class="text-left">
+            <a href="{% url 'create-expense' %}" class="btn btn-green">Thêm</a>
+            <br/>
+            <br/>
+        </div>
+        <label><strong>Tìm kiếm:</strong></label><input type="text" onkeyup="filter(event)">
+        <label><strong>Từ ngày:</strong></label><input type="date" min="2022-01-01" max="2100-12-31">
+        <label><strong>Đến ngày:</strong></label><input type="date" min="2022-01-01" max="2100-12-31">
+        <br/>
+        <br/>
+        <div style="overflow-x: auto;">
+            <table id="expense-list" class="table table-bordered table-hover no-wrap">
+                <thead class="text-center">
+                    <tr class="bg-gray text-black">
+                        <th rowspan="1">Mã số</th>
+                        <th>Ngày tạo</th>
+                        <th rowspan="1">Nội dung chi tiền</th>
+                        <th colspan="1">Số tiền</th>
+                        <th rowspan="1">Tài khoản</th>
+                        <th rowspan="1">Loại chi phí</th>
+                        <th rowspan="1">Chứng từ</th>
+                        <th rowspan="1">Mã ngân sách</th>
+                        <th rowspan="1">Mã hợp đồng/công trình</th>
+                        <th rowspan="1">Chi nhánh</th>
+                        <th rowspan="1">Họ tên người nộp</th>
+                        <th rowspan="1">Công ty</th>
+                        <th rowspan="1">Địa chỉ</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div id="paginator"></div>
+    </div>
+    {{ expenses|json_script:"expenses" }}
+    <script>
+            let data = [];
+            const expenses = JSON.parse(document.getElementById("expenses").textContent)
+            for(let i of expenses){
+                let row = { 
+                    "Mã số": i.id,
+                    "Ngày tạo": (new Date(i.created_at)).toLocaleString(),
+                    "Nội dung chi tiền": i.content,
+                    "Số tiền": i.amount,
+                    "Tài khoản": i.account,
+                    "Loại chi phí": i.expense_type,
+                    "Chứng từ": i.accounting_voucher,
+                    "Mã ngân sách": i.budget,
+                    "Mã hợp đồng/công trình": i.contract,
+                    "Chi nhánh": i.branch,
+                    "Họ tên người nộp": i.applicant,
+                    "Công ty": i.company,
+                    "Địa chỉ": i.address
+                }
+                data.push(row);
+            }
+
+            const options = {
+                tableId:'expense-list',
+                currentPage:1,
+                perPage:10,
+                autoHeaders:false,
+                arrowUp:'⇑',
+                arrowDown:'⇓',
+                previousText:'&#10094',
+                nextText:'&#10095',
+            }
+    
+            setTable(data, options);
+    
+        </script>
+</div>
+{% endblock %}

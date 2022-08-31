@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+<!-- {% block script %}
+<script>
+function myrefresh() {
+    window.location.reload();
+}
+setTimeout('myrefresh()', 5000);
+</script>
+{% endblock %} -->
+
+{% block title %}Danh sách thu tiền{% endblock %}
+
+{% block heading %}Danh sách thu tiền{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-body">
+        <div class="text-left">
+            <a href="{% url 'create-expense' %}" class="btn btn-green">Thêm</a>
+            <br/>
+            <br/>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="bg-gray text-black">
+                        <th>Mã số</th>
+                        <th>Ngày tạo</th>
+                        <th>Nội dung chi tiền</th>
+                        <th>Số tiền</th>
+                        <th>Tài khoản</th>
+                        <th>Loại chi phí</th>
+                        <th>Chứng từ</th>
+                        <th>Mã ngân sách</th>
+                        <th>Mã hợp đồng/công trình</th>
+                        <th>Chi nhánh</th>
+                        <th>Họ tên người nộp</th>
+                        <th>Công ty</th>
+                        <th>Địa chỉ</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    {% for expense in expenses %}
+                        <tr>
+                            <td>{{ expense.id }}</td>
+                            <td>{{ expense.created_at|date:"SHORT_DATE_FORMAT" }} {{ expense.created_at|time:"h:i a" }}</td>
+                            <td>{{ expense.content }}</td>
+                            <td>{{ expense.amount }}</td>
+                            <td>{{ expense.account }}</td>
+                            <td>{{ expense.expense_type }}</td>
+                            <td>{{ expense.accounting_voucher }}</td>
+                            <td>{{ expense.budget }}</td>
+                            <td>{{ expense.contract }}</td>
+                            <td>{{ expense.branch }}</td>
+                            <td>{{ expense.applicant }}</td>
+                            <td>{{ expense.company }}</td>
+                            <td>{{ expense.address }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

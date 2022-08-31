@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}Sửa thông tin thu tiền{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+        <div class="col-lg-4 col-lg-offset-4">
+            <h3 class="text-center text-uppercase"><b>Sửa thông tin thu tiền</b></h3>
+            <br>
+            <form method="POST">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <button type="submit" class="btn btn-green pull-right">Lưu</button>
+            </form>
+        </div>
+</div>
+{% endblock %}

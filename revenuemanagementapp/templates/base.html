@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/script.js' %}?6"></script>
+    {% block script %}{% endblock %}
+</head>
+{% url 'show-incomes' as show_incomes_url %}
+{% url 'show-expenses' as show_expenses_url %}
+{% url 'management-home' as management_home_url %}
+{% url 'change-password' as change_password_url %}
+<body class="bg-white">
+    <div class="topnav">
+        <a href="{% url 'show-incomes' %}" class="{% if request.path == show_incomes_url %} active {% endif %}">Thu</a>
+        <a href="{% url 'show-expenses' %}" class="{% if request.path == show_expenses_url %} active {% endif %}">Chi</a>
+        {% if request.user.is_superuser %}
+        <a href="{% url 'management-home' %}" class="{% if request.path == management_home_url %} active {% endif %}">Quản trị</a>
+        {% endif %}
+        {% if request.user.is_active %}
+        <a class="right-btn" href="{% url 'sign-out' %}?next={% url 'show-incomes' %}">Đăng xuất</a>
+        <a class="right-btn {% if request.path == change_password_url %} active {% endif %}" href="{% url 'change-password' %}?next={{ request.path }}">Đổi mật khẩu</a>
+        <div class="topnavtext">
+                Xin chào {{ request.user.username }}
+        </div>
+        {% endif %}
+    </div>
+    {% block nestedtopbar %}{% endblock %}
+    <div class="container">
+        <div>
+            <div>
+                <br/>
+                <br/>
+                <br/>
+                <div class="panel panel-body">
+                    <div class="panel-body">
+                        <h3 class="text-center text-uppercase"><b>{% block heading %}{% endblock %}</b></h3>
+                        <br/>
+                        {% block content %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

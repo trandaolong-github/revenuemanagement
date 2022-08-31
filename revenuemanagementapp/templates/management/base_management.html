@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block nestedtopbar %}
+<div class="nestedtopnav">
+    <a href="{% url 'admin:index' %}">Nhân sự</a>
+    <a href="{% url 'management-report' %}">Báo cáo</a>
+</div>
+{% endblock %}

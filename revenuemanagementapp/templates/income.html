@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+<!-- {% block script %}
+<script>
+function myrefresh() {
+    window.location.reload();
+}
+setTimeout('myrefresh()', 5000);
+</script>
+{% endblock %} -->
+
+{% block title %}Danh sách thu tiền{% endblock %}
+
+{% block heading %}Danh sách thu tiền{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-body">
+        <div class="text-left">
+            <a href="{% url 'create-income' %}" class="btn btn-green">Thêm</a>
+            <br/>
+            <br/>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="bg-gray text-black">
+                        <th>Mã số</th>
+                        <th>Ngày tạo</th>
+                        <th>Nội dung thu tiền</th>
+                        <th>Số tiền</th>
+                        <th>Tài khoản</th>
+                        <th>Loại doanh thu</th>
+                        <th>Chứng từ</th>
+                        <th>Mã ngân sách</th>
+                        <th>Mã hợp đồng/công trình</th>
+                        <th>Chi nhánh</th>
+                        <th>Họ tên người nộp</th>
+                        <th>Công ty</th>
+                        <th>Địa chỉ</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    {% for income in incomes %}
+                        <tr>
+                            <td>{{ income.id }}</td>
+                            <td>{{ income.created_at|date:"SHORT_DATE_FORMAT" }} {{ income.created_at|time:"h:i a" }}</td>
+                            <td>{{ income.content }}</td>
+                            <td>{{ income.amount }}</td>
+                            <td>{{ income.account }}</td>
+                            <td>{{ income.income_type }}</td>
+                            <td>{{ income.accounting_voucher }}</td>
+                            <td>{{ income.budget }}</td>
+                            <td>{{ income.contract }}</td>
+                            <td>{{ income.branch }}</td>
+                            <td>{{ income.applicant }}</td>
+                            <td>{{ income.company }}</td>
+                            <td>{{ income.address }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

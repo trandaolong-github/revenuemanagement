@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}Thu tiền{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+        <div class="col-lg-4 col-lg-offset-4">
+            <h3 class="text-center text-uppercase"><b>Thu tiền</b></h3>
+            <br>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% bootstrap_form create_income_form %}
+                <button type="submit" class="btn btn-green pull-right">Lưu</button>
+            </form>
+        </div>
+</div>
+{% endblock %}
