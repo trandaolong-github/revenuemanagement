@@ -111,24 +111,28 @@ const showPage = (page) => {
 
     pages[page].forEach(record => {
         const tr = document.createElement('tr');
-        let addHRef = true;
+        //let addHRef = true;
         Object.values(record).forEach(field => {
             const td = document.createElement('td');
             // if the current element is an iterable, content is added as a list of items
             if(typeof field == 'object'){
                 let content = '<ul>'
                 for(subfield in field){
-                    content +=  '<li>' + field[subfield] + '</li>' ;
+                    content +=  '<li>' + field[subfield] + '</li>';
                 }
                 field = content + '</ul>';
             }
-            if(addHRef){
-                let a = document.createElement('a');
-                a.setAttribute('href', "/edit-income/"+field+"/");
-                a.innerHTML = field;
-                td.appendChild(a);
-                addHRef = false;
+            if(field == "button"){
+                td.className = "buttonsBlock";
+                td.innerHTML = '<a class="btn save"> Lưu </a><a class="btn delete"> Xóa </a><a class="btn edit"> Sửa </a>'
             } else td.innerHTML = field;
+            // if(addHRef){
+            //     let a = document.createElement('a');
+            //     a.setAttribute('href', "/edit-income/"+field+"/");
+            //     a.innerHTML = field;
+            //     td.appendChild(a);
+            //     addHRef = false;
+            // } else td.innerHTML = field;
             tr.appendChild(td);
         });
         tableBody.appendChild(tr);

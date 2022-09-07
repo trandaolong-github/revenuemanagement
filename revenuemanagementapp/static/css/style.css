@@ -57,12 +57,16 @@ body {
 
 .table > thread > tr > th,
 .table > thread > tr > td {
-    vertical-align: middle;
+    vertical-align:middle;
 }
 
 .table,
 .table > thread > tr > th {
     border-color: #88A1B2;
+}
+
+.buttonsBlock {
+    white-space: nowrap;
 }
 
 /* Add a black background color to the top navigation */
@@ -128,4 +132,36 @@ body {
 .nestedtopnav a:hover {
     background-color: #ddd;
     color: black;
+}
+
+.save {
+    outline: none;
+    border: none;
+    display: none;
+    background: #55d484;
+    color: #ffffff;
+}
+.save:hover {
+    background: #05ee5b;
+}
+
+.edit {
+    outline: none;
+    border: none;
+    background: rgb(211, 183, 61);
+    color: #ffffff;
+}
+.edit:hover {
+    background: rgb(241, 198, 4);
+}
+
+.delete {
+    outline: none;
+    border: none;
+    display: none;
+    background: rgb(190, 52, 52);
+    color: #ffffff;
+}
+.delete:hover {
+    background: rgb(241, 4, 4);
 }

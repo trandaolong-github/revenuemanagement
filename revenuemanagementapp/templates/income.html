@@ -1,14 +1,5 @@
 {% extends 'base.html' %}
 
-<!-- {% block script %}
-<script>
-function myrefresh() {
-    window.location.reload();
-}
-setTimeout('myrefresh()', 5000);
-</script>
-{% endblock %} -->
-
 {% block title %}Danh sách thu tiền{% endblock %}
 
 {% block heading %}Danh sách thu tiền{% endblock %}
@@ -17,12 +8,12 @@ setTimeout('myrefresh()', 5000);
 <div class="panel">
     <div class="panel-body">
         <div class="text-left">
-            <a href="{% url 'create-income' %}" class="btn btn-green">Thêm</a>
+            <a onclick="addRow()" class="btn btn-green">Thêm</a>
             <br/>
             <br/>
         </div>
         <div style="overflow-x: auto;">
-            <table class="table table-bordered table-hover">
+            <table id="myTable" class="table table-bordered table-hover">
                 <thead>
                     <tr class="bg-gray text-black">
                         <th>Mã số</th>
@@ -38,30 +29,179 @@ setTimeout('myrefresh()', 5000);
                         <th>Họ tên người nộp</th>
                         <th>Công ty</th>
                         <th>Địa chỉ</th>
+                        <th></th>
                     </tr>
                 </thead>
                 
                 <tbody>
-                    {% for income in incomes %}
+                    <!-- {% for income in incomes %}
                         <tr>
-                            <td>{{ income.id }}</td>
+                            <td class="incomeId">{{ income.id }}</td>
                             <td>{{ income.created_at|date:"SHORT_DATE_FORMAT" }} {{ income.created_at|time:"h:i a" }}</td>
-                            <td>{{ income.content }}</td>
-                            <td>{{ income.amount }}</td>
-                            <td>{{ income.account }}</td>
-                            <td>{{ income.income_type }}</td>
-                            <td>{{ income.accounting_voucher }}</td>
-                            <td>{{ income.budget }}</td>
-                            <td>{{ income.contract }}</td>
-                            <td>{{ income.branch }}</td>
-                            <td>{{ income.applicant }}</td>
-                            <td>{{ income.company }}</td>
-                            <td>{{ income.address }}</td>
+                            <td class="data">{{ income.content }}</td>
+                            <td class="data">{{ income.amount }}</td>
+                            <td class="data">{{ income.account }}</td>
+                            <td class="data">{{ income.income_type }}</td>
+                            <td class="data">{{ income.accounting_voucher }}</td>
+                            <td class="data">{{ income.budget }}</td>
+                            <td class="data">{{ income.contract }}</td>
+                            <td class="data">{{ income.branch }}</td>
+                            <td class="data">{{ income.applicant }}</td>
+                            <td class="data">{{ income.company }}</td>
+                            <td class="data">{{ income.address }}</td>
+                            <td class="buttonsBlock">
+                                <a class="btn save"> Lưu </a>
+                                <a class="btn delete"> Xóa </a>
+                                <a class="btn edit"> Sửa </a>
+                            </td>
                         </tr>
-                    {% endfor %}
+                    {% endfor %} -->
                 </tbody>
             </table>
         </div>
+        <div id="paginator"></div>
     </div>
+    {{ incomes|json_script:"incomes" }}
+    <script>
+
+        loadIncomeTable();
+
+        $(document).on('click', '.edit', function() {
+        $(this).parent().siblings('td.data').each(function() {
+            content = $(this).html();
+            $(this).html('<input value="' + content + '" />');
+        });
+        $(this).siblings('.save').show();
+        $(this).siblings('.delete').hide();
+        $(this).hide();
+        });
+
+        $(document).on('click', '.save', function() {
+        var interupt = false;
+        var data = [this];
+        $('input').each(function() {
+            var content = $(this).val();
+            if (content == ''){
+                alert("Còn ô trống chưa điền !!!");
+                interupt = true;
+                return false;
+            }
+            data.push(content)
+            $(this).html(content);
+            $(this).contents().unwrap();
+        });
+        if (interupt){
+            return false;
+        }
+
+        sendToServer.apply(this, data);
+        });
+
+        $(document).on('click', '.delete', function() {
+        $(this).parents('tr').remove();
+        });
+
+        function sendToServer(saveElement, content, amount, account, income_type, accounting_voucher, budget, contract, branch, applicant, company, address){
+            incomeId = $(saveElement).parent().siblings('td.incomeId').html()
+            var url, type;
+            if (incomeId) {
+                url = "http://127.0.0.1:8000/api/1/incomes/" + incomeId + "/";
+                type = "PUT";
+            }
+            else {
+                url = "http://127.0.0.1:8000/api/1/incomes/";
+                type = "POST";
+            }
+            $.ajax({
+                url: url,
+                type: type,
+                data: {
+                    content:content, amount:amount, account:account, income_type:income_type, accounting_voucher:accounting_voucher,
+                    budget:budget, contract:contract, branch:branch, applicant:applicant, company:company, address:address
+                },
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+            })
+            .done(function(response){
+                console.log(response);
+                $(saveElement).siblings('.edit').show();
+                $(saveElement).siblings('.delete').hide();
+                $(saveElement).hide();
+                if(!incomeId){
+                    loadIncomeTable();
+                }
+            })
+            .fail(function(response){
+                console.log(response);
+                alert("Có lỗi xảy ra, không thể lưu vô cơ sở dữ liệu !!!");
+            });
+        }
+
+        function addRow() {
+            var table = document.getElementById("myTable")
+            var row = table.insertRow(1)
+            for (let i=0;i<2;i++)
+            {
+                var cell = row.insertCell(i);
+                cell.innerHTML = '';
+            }
+            for (let i=2;i<13;i++)
+            {
+                var cell = row.insertCell(i);
+                cell.innerHTML = '<input value="'+'" />';
+                cell.className = "data"
+            }
+            cell = row.insertCell(13)
+            cell.className = "buttonsBlock"
+            cell.innerHTML = '<a class="btn save" style="display:inline"> Lưu </a><a class="btn delete" style="display:inline"> Xóa </a><a class="btn edit" style="display:none"> Sửa </a>'
+        }
+
+        function loadIncomeTable() {
+            let data = [];
+            $.ajax({
+                url: "http://127.0.0.1:8000/api/1/incomes/",
+                type: "GET",
+                dataType: 'json',
+            })
+            .done(function(response){
+                console.log(response);
+            })
+            .fail(function(response){
+                console.log(response);
+            });
+            const incomes = JSON.parse(document.getElementById("incomes").textContent)
+            for(let i of incomes){
+                let row = { 
+                    "Mã số": i.id,
+                    "Ngày tạo": (new Date(i.created_at)).toLocaleString(),
+                    "Nội dung thu tiền": i.content,
+                    "Số tiền": i.amount,
+                    "Tài khoản": i.account,
+                    "Loại doanh thu": i.income_type,
+                    "Chứng từ": i.accounting_voucher,
+                    "Mã ngân sách": i.budget,
+                    "Mã hợp đồng/công trình": i.contract,
+                    "Chi nhánh": i.branch,
+                    "Họ tên người nộp": i.applicant,
+                    "Công ty": i.company,
+                    "Địa chỉ": i.address,
+                    "": "button",
+                }
+                data.push(row);
+            }
+
+            const options = {
+                tableId:'myTable',
+                currentPage:1,
+                perPage:10,
+                autoHeaders:false,
+                arrowUp:'⇑',
+                arrowDown:'⇓',
+                previousText:'&#10094',
+                nextText:'&#10095',
+            }
+    
+            setTable(data, options);
+        }
+    </script>
 </div>
 {% endblock %}

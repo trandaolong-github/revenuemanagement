@@ -38,4 +38,9 @@ urlpatterns = [
     path('change-password/', views.change_password, name='change-password'),
     path('management/', views.management_home, name='management-home'),
     path('management/report/', views.management_report, name='management-report'),
+
+    path('api/1/incomes/', views.IncomeList.as_view(), name="income-index"),
+    path('api/1/incomes/<int:pk>/', views.IncomeDetail.as_view(), name="income-detail"),
+    path('api/1/expenses/', views.ExpenseList.as_view(), name="expense-index"),
+    path('api/1/expenses/<int:pk>/', views.ExpenseDetail.as_view(), name="expense-detail"),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

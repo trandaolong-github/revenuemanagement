@@ -1,13 +1,20 @@
 from django import forms
+from django.db.models.query import QuerySet
 from django.core import serializers
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework import status
+from rest_framework.generics import GenericAPIView
+from rest_framework.request import Request
+from rest_framework.response import Response
+
 from revenuemanagementapp.models import Income, Expense
+from revenuemanagementapp.serializers import IncomeSerializer, ExpenseSerializer
 from revenuemanagementapp.forms import CreateIncomeForm, CreateExpenseForm
 import logging
 
@@ -31,12 +38,8 @@ def create_income(request):
 
 @login_required(login_url='/sign-in/')
 def show_incomes(request):
-    if request.user.is_superuser:
-        incomes = Income.objects.order_by("-id").values()
-        return render(request, 'income_admin.html', {"incomes": list(incomes)})
-
-    incomes = Income.objects.order_by("-id")[:10]
-    return render(request, 'income.html', {"incomes": incomes})
+    incomes = Income.objects.order_by("-id")[:20].values()
+    return render(request, 'income.html', {"incomes": list(incomes)})
 
 @login_required(login_url='/sign-in/')
 @user_passes_test(lambda u:u.is_superuser, login_url='/')
@@ -115,3 +118,115 @@ def management_home(request):
 @user_passes_test(lambda u:u.is_superuser, login_url='/')
 def management_report(request):
     return render(request, 'management/report.html')
+
+
+class IncomeList(GenericAPIView):
+
+    serializer_class = IncomeSerializer
+
+    def get_queryset(self) -> QuerySet:
+        return Income.objects.all()
+
+    def get(self, request: Request, format=None) -> Response:
+        """
+        List all income instances
+        """
+
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+    def post(self, request: Request, format=None) -> Response:
+        """
+        Create a new income instance
+        """
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class IncomeDetail(GenericAPIView):
+
+    serializer_class = IncomeSerializer
+
+    def get_object(self) -> Income:
+        obj = get_object_or_404(Income, id=self.kwargs["pk"])
+        return obj
+
+    def get(self, request: Request, pk: int, format=None) -> Response:
+        """
+        Retrieve an income instance
+        """
+
+        income = self.get_object()
+        serializer = self.serializer_class(income)
+        return Response(serializer.data)
+
+    def put(self, request: Request, pk: int, format=None) -> Response:
+        """
+        Update an income instance
+        """
+
+        income = self.get_object()
+        serializer = self.serializer_class(income, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        income = serializer.save()
+        return Response(serializer.data)
+
+
+class ExpenseList(GenericAPIView):
+
+    serializer_class = ExpenseSerializer
+
+    def get_queryset(self) -> QuerySet:
+        return Expense.objects.all()
+
+    def get(self, request: Request, format=None) -> Response:
+        """
+        List all expense instances
+        """
+
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+    def post(self, request: Request, format=None) -> Response:
+        """
+        Create a new expense instance
+        """
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ExpenseDetail(GenericAPIView):
+
+    serializer_class = ExpenseSerializer
+
+    def get_object(self) -> Expense:
+        obj = get_object_or_404(Expense, id=self.kwargs["pk"])
+        return obj
+
+    def get(self, request: Request, pk: int, format=None) -> Response:
+        """
+        Retrieve an expense instance
+        """
+
+        expense = self.get_object()
+        serializer = self.serializer_class(expense)
+        return Response(serializer.data)
+
+    def put(self, request: Request, pk: int, format=None) -> Response:
+        """
+        Update an expense instance
+        """
+
+        expense = self.get_object()
+        serializer = self.serializer_class(expense, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        expense = serializer.save()
+        return Response(serializer.data)

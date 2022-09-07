@@ -1,4 +1,5 @@
 Django
+djangorestframework
 django-bootstrap4
 # These are only for heroku
 gunicorn
