@@ -111,7 +111,6 @@ const showPage = (page) => {
 
     pages[page].forEach(record => {
         const tr = document.createElement('tr');
-        //let addHRef = true;
         Object.values(record).forEach(field => {
             const td = document.createElement('td');
             // if the current element is an iterable, content is added as a list of items
@@ -126,13 +125,6 @@ const showPage = (page) => {
                 td.className = "buttonsBlock";
                 td.innerHTML = '<a class="btn save"> Lưu </a><a class="btn delete"> Xóa </a><a class="btn edit"> Sửa </a>'
             } else td.innerHTML = field;
-            // if(addHRef){
-            //     let a = document.createElement('a');
-            //     a.setAttribute('href', "/edit-income/"+field+"/");
-            //     a.innerHTML = field;
-            //     td.appendChild(a);
-            //     addHRef = false;
-            // } else td.innerHTML = field;
             tr.appendChild(td);
         });
         tableBody.appendChild(tr);
