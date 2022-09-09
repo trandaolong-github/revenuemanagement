@@ -111,20 +111,29 @@ const showPage = (page) => {
 
     pages[page].forEach(record => {
         const tr = document.createElement('tr');
+        var i = 0;
         Object.values(record).forEach(field => {
+            i += 1;
+            console.log(i, field);
             const td = document.createElement('td');
-            // if the current element is an iterable, content is added as a list of items
-            if(typeof field == 'object'){
-                let content = '<ul>'
-                for(subfield in field){
-                    content +=  '<li>' + field[subfield] + '</li>';
-                }
-                field = content + '</ul>';
+            if (i==1){
+                td.className = "incomeId";
+                td.innerHTML = field;
+                tr.appendChild(td);
+                return;
+            }
+            if (i==2){
+                td.innerHTML = field;
+                tr.appendChild(td);
+                return;
             }
             if(field == "button"){
                 td.className = "buttonsBlock";
                 td.innerHTML = '<a class="btn save"> Lưu </a><a class="btn delete"> Xóa </a><a class="btn edit"> Sửa </a>'
-            } else td.innerHTML = field;
+            } else {
+                td.className = "data";
+                td.innerHTML = field;
+            }
             tr.appendChild(td);
         });
         tableBody.appendChild(tr);

@@ -5,9 +5,13 @@ from revenuemanagementapp import models
 
 
 class IncomeSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
+    created_at = serializers.DateTimeField(required=False)
     class Meta:
         model = models.Income
         fields = (
+            'id',
+            'created_at',
             'content',
             'amount',
             'account',

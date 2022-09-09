@@ -38,8 +38,7 @@ def create_income(request):
 
 @login_required(login_url='/sign-in/')
 def show_incomes(request):
-    incomes = Income.objects.order_by("-id")[:20].values()
-    return render(request, 'income.html', {"incomes": list(incomes)})
+    return render(request, 'income.html')
 
 @login_required(login_url='/sign-in/')
 @user_passes_test(lambda u:u.is_superuser, login_url='/')
@@ -125,7 +124,7 @@ class IncomeList(GenericAPIView):
     serializer_class = IncomeSerializer
 
     def get_queryset(self) -> QuerySet:
-        return Income.objects.all()
+        return Income.objects.order_by("-id")[:20]
 
     def get(self, request: Request, format=None) -> Response:
         """

@@ -126,9 +126,7 @@
                 $(saveElement).siblings('.edit').show();
                 $(saveElement).siblings('.delete').hide();
                 $(saveElement).hide();
-                if(!incomeId){
-                    loadIncomeTable();
-                }
+                loadIncomeTable();
             })
             .fail(function(response){
                 console.log(response);
@@ -163,44 +161,42 @@
                 dataType: 'json',
             })
             .done(function(response){
-                console.log(response);
+                for(let i of response){
+                    let row = { 
+                        "Mã số": i.id,
+                        "Ngày tạo": (new Date(i.created_at)).toLocaleString(),
+                        "Nội dung thu tiền": i.content,
+                        "Số tiền": i.amount,
+                        "Tài khoản": i.account,
+                        "Loại doanh thu": i.income_type,
+                        "Chứng từ": i.accounting_voucher,
+                        "Mã ngân sách": i.budget,
+                        "Mã hợp đồng/công trình": i.contract,
+                        "Chi nhánh": i.branch,
+                        "Họ tên người nộp": i.applicant,
+                        "Công ty": i.company,
+                        "Địa chỉ": i.address,
+                        "": "button",
+                    }
+                    data.push(row);
+                }
+
+                const options = {
+                    tableId:'myTable',
+                    currentPage:1,
+                    perPage:10,
+                    autoHeaders:false,
+                    arrowUp:'⇑',
+                    arrowDown:'⇓',
+                    previousText:'&#10094',
+                    nextText:'&#10095',
+                }
+        
+                setTable(data, options);
             })
             .fail(function(response){
                 console.log(response);
             });
-            const incomes = JSON.parse(document.getElementById("incomes").textContent)
-            for(let i of incomes){
-                let row = { 
-                    "Mã số": i.id,
-                    "Ngày tạo": (new Date(i.created_at)).toLocaleString(),
-                    "Nội dung thu tiền": i.content,
-                    "Số tiền": i.amount,
-                    "Tài khoản": i.account,
-                    "Loại doanh thu": i.income_type,
-                    "Chứng từ": i.accounting_voucher,
-                    "Mã ngân sách": i.budget,
-                    "Mã hợp đồng/công trình": i.contract,
-                    "Chi nhánh": i.branch,
-                    "Họ tên người nộp": i.applicant,
-                    "Công ty": i.company,
-                    "Địa chỉ": i.address,
-                    "": "button",
-                }
-                data.push(row);
-            }
-
-            const options = {
-                tableId:'myTable',
-                currentPage:1,
-                perPage:10,
-                autoHeaders:false,
-                arrowUp:'⇑',
-                arrowDown:'⇓',
-                previousText:'&#10094',
-                nextText:'&#10095',
-            }
-    
-            setTable(data, options);
         }
     </script>
 </div>
