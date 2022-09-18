@@ -7,6 +7,7 @@ from revenuemanagementapp import models
 class IncomeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
     created_at = serializers.DateTimeField(required=False)
+    receiving_date = serializers.DateField(required=False)
     class Meta:
         model = models.Income
         fields = (
@@ -17,12 +18,11 @@ class IncomeSerializer(serializers.ModelSerializer):
             'account',
             'income_type',
             'accounting_voucher',
-            'budget',
-            'contract',
-            'branch',
-            'applicant',
-            'company',
+            'receiving_date',
+            'receiver',
+            'sender',
             'address',
+            'place',
         )
 
     @transaction.atomic
@@ -37,12 +37,11 @@ class IncomeSerializer(serializers.ModelSerializer):
         instance.account = validated_data.get("account", instance.account)
         instance.income_type = validated_data.get("income_type", instance.income_type)
         instance.accounting_voucher = validated_data.get("accounting_voucher", instance.accounting_voucher)
-        instance.budget = validated_data.get("budget", instance.budget)
-        instance.contract = validated_data.get("contract", instance.contract)
-        instance.branch = validated_data.get("branch", instance.branch)
-        instance.applicant = validated_data.get("applicant", instance.applicant)
-        instance.company = validated_data.get("company", instance.company)
+        instance.receiving_date = validated_data.get("receiving_date", instance.receiving_date)
+        instance.receiver = validated_data.get("receiver", instance.receiver)
+        instance.sender = validated_data.get("sender", instance.sender)
         instance.address = validated_data.get("address", instance.address)
+        instance.place = validated_data.get("place", instance.place)
 
         instance.save()
         return instance

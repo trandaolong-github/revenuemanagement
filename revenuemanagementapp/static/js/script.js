@@ -18,7 +18,7 @@ const setTable = (data, options) => {
     if(data.length > 0){
         addHeaders(data[0],options.autoHeaders);
     }
-    addColumnSorting();
+    //addColumnSorting();
 }
 
 // Calls required methods
@@ -114,7 +114,6 @@ const showPage = (page) => {
         var i = 0;
         Object.values(record).forEach(field => {
             i += 1;
-            console.log(i, field);
             const td = document.createElement('td');
             if (i==1){
                 td.className = "incomeId";

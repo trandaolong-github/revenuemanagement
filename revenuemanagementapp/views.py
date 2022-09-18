@@ -15,7 +15,7 @@ from rest_framework.response import Response
 
 from revenuemanagementapp.models import Income, Expense
 from revenuemanagementapp.serializers import IncomeSerializer, ExpenseSerializer
-from revenuemanagementapp.forms import CreateIncomeForm, CreateExpenseForm
+from revenuemanagementapp.forms import CreateExpenseForm
 import logging
 
 # Get an instance of a logger
@@ -25,35 +25,8 @@ def home(request):
     return redirect(show_incomes)
 
 @login_required(login_url='/sign-in/')
-def create_income(request):
-    create_income_form = CreateIncomeForm()
-    if request.method == "POST":
-        create_income_form = CreateIncomeForm(request.POST)
-        if create_income_form.is_valid():
-            new_income = create_income_form.save(commit=False)
-            new_income.save()
-
-            return redirect(show_incomes)
-    return render(request, 'create_income.html', {'create_income_form': create_income_form})
-
-@login_required(login_url='/sign-in/')
 def show_incomes(request):
     return render(request, 'income.html')
-
-@login_required(login_url='/sign-in/')
-@user_passes_test(lambda u:u.is_superuser, login_url='/')
-def edit_income(request, income_id):
-    income = Income.objects.get(id=income_id)
-
-    if request.method == "POST":
-        form = CreateIncomeForm(request.POST, request.FILES, instance=income)
-        if form.is_valid():
-            form.save()
-            return redirect(show_incomes)
-    else:
-        form = CreateIncomeForm(instance=income)
-
-    return render(request, 'edit_income.html', {"form": form})
 
 @login_required(login_url='/sign-in/')
 def create_expense(request):

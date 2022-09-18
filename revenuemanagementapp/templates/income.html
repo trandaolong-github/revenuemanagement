@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
-{% block title %}Danh sách thu tiền{% endblock %}
+{% block title %}Sổ thu tiền mặt{% endblock %}
 
-{% block heading %}Danh sách thu tiền{% endblock %}
+{% block heading %}Sổ thu tiền mặt{% endblock %}
 
 {% block content %}
 <div class="panel">
@@ -16,19 +16,18 @@
             <table id="myTable" class="table table-bordered table-hover">
                 <thead>
                     <tr class="bg-gray text-black">
-                        <th>Mã số</th>
+                        <th>Số TT</th>
                         <th>Ngày tạo</th>
                         <th>Nội dung thu tiền</th>
                         <th>Số tiền</th>
-                        <th>Tài khoản</th>
+                        <th>Tài khoản đối ứng</th>
                         <th>Loại doanh thu</th>
-                        <th>Chứng từ</th>
-                        <th>Mã ngân sách</th>
-                        <th>Mã hợp đồng/công trình</th>
-                        <th>Chi nhánh</th>
-                        <th>Họ tên người nộp</th>
-                        <th>Công ty</th>
+                        <th>Số chứng từ</th>
+                        <th>Ngày thu tiền</th>
+                        <th>Người trực tiếp thu tiền</th>
+                        <th>Họ tên người nộp tiền</th>
                         <th>Địa chỉ</th>
+                        <th>Nhận tiền tại</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -61,47 +60,55 @@
         </div>
         <div id="paginator"></div>
     </div>
-    {{ incomes|json_script:"incomes" }}
     <script>
 
         loadIncomeTable();
 
         $(document).on('click', '.edit', function() {
-        $(this).parent().siblings('td.data').each(function() {
-            content = $(this).html();
-            $(this).html('<input value="' + content + '" />');
-        });
-        $(this).siblings('.save').show();
-        $(this).siblings('.delete').hide();
-        $(this).hide();
+            let i = 0;
+            $(this).parent().siblings('td.data').each(function() {
+                i += 1;
+                content = $(this).html();
+                if (i==6){
+                    $(this).html('<input type="date" value="' + content + '" />');
+                } else {
+                    $(this).html('<input value="' + content + '" />');
+                }
+            });
+            $(this).siblings('.save').show();
+            $(this).siblings('.delete').hide();
+            $(this).hide();
         });
 
         $(document).on('click', '.save', function() {
-        var interupt = false;
-        var data = [this];
-        $('input').each(function() {
-            var content = $(this).val();
-            if (content == ''){
-                alert("Còn ô trống chưa điền !!!");
-                interupt = true;
+            var interupt = false;
+            var data = [this];
+            let i = 0;
+            $('input').each(function() {
+                i += 1;
+                var content = $(this).val();
+                if (content == ''){
+                    if (i != 6){
+                        alert("Còn ô trống chưa điền !!!");
+                        interupt = true;
+                        return false;
+                    } else {
+                        content = null;
+                    }
+                }
+                data.push(content);
+            });
+            if (interupt){
                 return false;
             }
-            data.push(content)
-            $(this).html(content);
-            $(this).contents().unwrap();
-        });
-        if (interupt){
-            return false;
-        }
-
-        sendToServer.apply(this, data);
+            sendToServer.apply(this, data);
         });
 
         $(document).on('click', '.delete', function() {
-        $(this).parents('tr').remove();
+            $(this).parents('tr').remove();
         });
 
-        function sendToServer(saveElement, content, amount, account, income_type, accounting_voucher, budget, contract, branch, applicant, company, address){
+        function sendToServer(saveElement, content, amount, account, income_type, accounting_voucher, receiving_date, receiver, sender, address, place){
             incomeId = $(saveElement).parent().siblings('td.incomeId').html()
             var url, type;
             if (incomeId) {
@@ -111,21 +118,18 @@
             else {
                 url = "http://127.0.0.1:8000/api/1/incomes/";
                 type = "POST";
+                document.getElementById("myTable").deleteRow(1);
             }
             $.ajax({
                 url: url,
                 type: type,
                 data: {
                     content:content, amount:amount, account:account, income_type:income_type, accounting_voucher:accounting_voucher,
-                    budget:budget, contract:contract, branch:branch, applicant:applicant, company:company, address:address
+                    receiving_date:receiving_date, receiver:receiver, sender:sender, address:address, place:place
                 },
                 headers: { "X-CSRFToken": '{{csrf_token}}' },
             })
             .done(function(response){
-                console.log(response);
-                $(saveElement).siblings('.edit').show();
-                $(saveElement).siblings('.delete').hide();
-                $(saveElement).hide();
                 loadIncomeTable();
             })
             .fail(function(response){
@@ -142,13 +146,17 @@
                 var cell = row.insertCell(i);
                 cell.innerHTML = '';
             }
-            for (let i=2;i<13;i++)
+            for (let i=2;i<12;i++)
             {
                 var cell = row.insertCell(i);
-                cell.innerHTML = '<input value="'+'" />';
+                if (i==7){
+                    cell.innerHTML = '<input type="date" >';
+                } else {
+                    cell.innerHTML = '<input value="'+'" />';
+                }
                 cell.className = "data"
             }
-            cell = row.insertCell(13)
+            cell = row.insertCell(12)
             cell.className = "buttonsBlock"
             cell.innerHTML = '<a class="btn save" style="display:inline"> Lưu </a><a class="btn delete" style="display:inline"> Xóa </a><a class="btn edit" style="display:none"> Sửa </a>'
         }
@@ -163,19 +171,18 @@
             .done(function(response){
                 for(let i of response){
                     let row = { 
-                        "Mã số": i.id,
+                        "Số TT": i.id,
                         "Ngày tạo": (new Date(i.created_at)).toLocaleString(),
                         "Nội dung thu tiền": i.content,
                         "Số tiền": i.amount,
-                        "Tài khoản": i.account,
+                        "Tài khoản đối ứng": i.account,
                         "Loại doanh thu": i.income_type,
-                        "Chứng từ": i.accounting_voucher,
-                        "Mã ngân sách": i.budget,
-                        "Mã hợp đồng/công trình": i.contract,
-                        "Chi nhánh": i.branch,
-                        "Họ tên người nộp": i.applicant,
-                        "Công ty": i.company,
+                        "Số chứng từ": i.accounting_voucher,
+                        "Ngày thu tiền": i.receiving_date,
+                        "Người trực tiếp thu tiền": i.receiver,
+                        "Họ tên người nộp tiền": i.sender,
                         "Địa chỉ": i.address,
+                        "Nhận tiền tại": i.place,
                         "": "button",
                     }
                     data.push(row);
