@@ -10,7 +10,7 @@ class Income(models.Model):
     amount  = models.CharField(max_length=20)
     account = models.CharField(max_length=100)
     income_type = models.CharField(max_length=100)
-    accounting_voucher = models.CharField(max_length=100)
+    accounting_voucher = models.CharField(max_length=20)
     receiving_date = models.DateField(default=date.today)
     receiver = models.CharField(max_length=100)
 

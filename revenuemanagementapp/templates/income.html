@@ -69,8 +69,26 @@
             $(this).parent().siblings('td.data').each(function() {
                 i += 1;
                 content = $(this).html();
-                if (i==6){
+                if (i==5){
                     $(this).html('<input type="date" value="' + content + '" />');
+                } else if (i==3) {
+                    if (content == "141"){
+                        $(this).html('<select id="select_accounts" onchange="updateIncomeType(this)"><option value="141" selected="selected">141</option><option value="338">338</option><option value="511">511</option><option value="711">711</option></select>');
+                    } else if (content == "338"){
+                        $(this).html('<select id="select_accounts" onchange="updateIncomeType(this)"><option value="141">141</option><option value="338" selected="selected">338</option><option value="511">511</option><option value="711">711</option></select>');
+                    } else if (content == "511"){
+                        $(this).html('<select id="select_accounts" onchange="updateIncomeType(this)"><option value="141">141</option><option value="338">338</option><option value="511" selected="selected">511</option><option value="711">711</option></select>');
+                    } else if (content == "711"){
+                        $(this).html('<select id="select_accounts" onchange="updateIncomeType(this)"><option value="141">141</option><option value="338">338</option><option value="511">511</option><option value="711" selected="selected">711</option></select>');
+                    }
+                } else if (i==4) {
+                    $(this).html(content);
+                } else if (i==9) {
+                    if (content == "Tại công ty"){
+                        $(this).html('<select id="select_places"><option value="Tại công ty" selected="selected">Tại công ty</option><option value="Ngoài công ty">Ngoài công ty</option></select>');
+                    } else {
+                        $(this).html('<select id="select_places"><option value="Tại công ty">Tại công ty</option><option value="Ngoài công ty" selected="selected">Ngoài công ty</option></select>');
+                    }
                 } else {
                     $(this).html('<input value="' + content + '" />');
                 }
@@ -88,7 +106,7 @@
                 i += 1;
                 var content = $(this).val();
                 if (content == ''){
-                    if (i != 6){
+                    if (i != 3){
                         alert("Còn ô trống chưa điền !!!");
                         interupt = true;
                         return false;
@@ -97,6 +115,13 @@
                     }
                 }
                 data.push(content);
+                if (i==2){
+                    data.push($('#select_accounts').val())
+                    data.push($($(this).parent().siblings('td.data')[2]).html());
+                }
+                if (i==6) {
+                    data.push($('#select_places').val());
+                }
             });
             if (interupt){
                 return false;
@@ -108,7 +133,22 @@
             $(this).parents('tr').remove();
         });
 
-        function sendToServer(saveElement, content, amount, account, income_type, accounting_voucher, receiving_date, receiver, sender, address, place){
+        function updateIncomeType(element) {
+            var updatedValue;
+            var value = $('#select_accounts').val();
+            if (value == "141"){
+                updatedValue = "Thu hồi tạm ứng";
+            } else if (value == "338"){
+                updatedValue = "Phải trả khác";
+            } else if (value == "511"){
+                updatedValue = "Doanh thu bán hàng, CCDV";
+            } else if (value == "711"){
+                updatedValue = "Thu nhập khác";
+            }
+            $($(element).parent().siblings('td.data')[2]).html(updatedValue);
+        }
+
+        function sendToServer(saveElement, content, amount, account, income_type, receiving_date, receiver, sender, address, place){
             incomeId = $(saveElement).parent().siblings('td.incomeId').html()
             var url, type;
             if (incomeId) {
@@ -124,7 +164,7 @@
                 url: url,
                 type: type,
                 data: {
-                    content:content, amount:amount, account:account, income_type:income_type, accounting_voucher:accounting_voucher,
+                    content:content, amount:amount, account:account, income_type:income_type,
                     receiving_date:receiving_date, receiver:receiver, sender:sender, address:address, place:place
                 },
                 headers: { "X-CSRFToken": '{{csrf_token}}' },
@@ -151,6 +191,14 @@
                 var cell = row.insertCell(i);
                 if (i==7){
                     cell.innerHTML = '<input type="date" >';
+                } else if (i==6) {
+                    cell.innerHTML = '';
+                } else if (i==4) {
+                    cell.innerHTML = '<select id="select_accounts" onchange="updateIncomeType(this)"><option value="141" selected="selected">141</option><option value="338">338</option><option value="511">511</option><option value="711">711</option></select>';
+                } else if (i==5){
+                    cell.innerHTML = 'Thu hồi tạm ứng';
+                } else if (i==11){
+                    cell.innerHTML = '<select id="select_places"><option value="Tại công ty">Tại công ty</option><option value="Ngoài công ty">Ngoài công ty</option></select>';
                 } else {
                     cell.innerHTML = '<input value="'+'" />';
                 }

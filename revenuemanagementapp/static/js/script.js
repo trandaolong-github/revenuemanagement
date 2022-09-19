@@ -121,7 +121,7 @@ const showPage = (page) => {
                 tr.appendChild(td);
                 return;
             }
-            if (i==2){
+            if (i==2 || i==7){
                 td.innerHTML = field;
                 tr.appendChild(td);
                 return;

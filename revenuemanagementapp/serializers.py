@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import transaction
 from rest_framework import serializers
 
@@ -8,6 +10,7 @@ class IncomeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
     created_at = serializers.DateTimeField(required=False)
     receiving_date = serializers.DateField(required=False)
+    accounting_voucher = serializers.CharField(required=False, max_length=20)
     class Meta:
         model = models.Income
         fields = (
@@ -28,6 +31,8 @@ class IncomeSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         income = models.Income.objects.create(**validated_data)
+        income.accounting_voucher = "T" + str(income.id) + "/" + str(date.today().month) + "/" + str(date.today().year)
+        income.save()
         return income
 
     @transaction.atomic
