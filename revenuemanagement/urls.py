@@ -39,6 +39,7 @@ urlpatterns = [
 
     path('api/1/incomes/', views.IncomeList.as_view(), name="income-index"),
     path('api/1/incomes/<int:pk>/', views.IncomeDetail.as_view(), name="income-detail"),
+    path('api/1/incomes/info/', views.get_receivers_senders_addresses, name="income-info"),
     path('api/1/expenses/', views.ExpenseList.as_view(), name="expense-index"),
     path('api/1/expenses/<int:pk>/', views.ExpenseDetail.as_view(), name="expense-detail"),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

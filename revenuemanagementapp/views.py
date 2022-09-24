@@ -8,7 +8,8 @@ from django.contrib.auth import REDIRECT_FIELD_NAME, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import status
+from rest_framework import permissions ,status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import GenericAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -95,6 +96,7 @@ def management_report(request):
 class IncomeList(GenericAPIView):
 
     serializer_class = IncomeSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self) -> QuerySet:
         return Income.objects.order_by("-id")[:20]
@@ -122,6 +124,7 @@ class IncomeList(GenericAPIView):
 class IncomeDetail(GenericAPIView):
 
     serializer_class = IncomeSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self) -> Income:
         obj = get_object_or_404(Income, id=self.kwargs["pk"])
@@ -151,6 +154,7 @@ class IncomeDetail(GenericAPIView):
 class ExpenseList(GenericAPIView):
 
     serializer_class = ExpenseSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self) -> QuerySet:
         return Expense.objects.all()
@@ -178,6 +182,7 @@ class ExpenseList(GenericAPIView):
 class ExpenseDetail(GenericAPIView):
 
     serializer_class = ExpenseSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self) -> Expense:
         obj = get_object_or_404(Expense, id=self.kwargs["pk"])
@@ -202,3 +207,10 @@ class ExpenseDetail(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         expense = serializer.save()
         return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_receivers_senders_addresses(request):
+    data = Income.objects.values_list('receiver', 'sender', 'address').distinct()
+    return Response(data)

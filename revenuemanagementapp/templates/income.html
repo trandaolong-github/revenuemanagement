@@ -12,7 +12,7 @@
             <br/>
             <br/>
         </div>
-        <div style="overflow-x: auto;">
+        <div style="overflow-x: auto;height: 500px;;margin-top:20px;">
             <table id="myTable" class="table table-bordered table-hover">
                 <thead>
                     <tr class="bg-gray text-black">
@@ -33,36 +33,31 @@
                 </thead>
                 
                 <tbody>
-                    <!-- {% for income in incomes %}
-                        <tr>
-                            <td class="incomeId">{{ income.id }}</td>
-                            <td>{{ income.created_at|date:"SHORT_DATE_FORMAT" }} {{ income.created_at|time:"h:i a" }}</td>
-                            <td class="data">{{ income.content }}</td>
-                            <td class="data">{{ income.amount }}</td>
-                            <td class="data">{{ income.account }}</td>
-                            <td class="data">{{ income.income_type }}</td>
-                            <td class="data">{{ income.accounting_voucher }}</td>
-                            <td class="data">{{ income.budget }}</td>
-                            <td class="data">{{ income.contract }}</td>
-                            <td class="data">{{ income.branch }}</td>
-                            <td class="data">{{ income.applicant }}</td>
-                            <td class="data">{{ income.company }}</td>
-                            <td class="data">{{ income.address }}</td>
-                            <td class="buttonsBlock">
-                                <a class="btn save"> Lưu </a>
-                                <a class="btn delete"> Xóa </a>
-                                <a class="btn edit"> Sửa </a>
-                            </td>
-                        </tr>
-                    {% endfor %} -->
                 </tbody>
             </table>
         </div>
         <div id="paginator"></div>
     </div>
     <script>
-
-        loadIncomeTable();
+        var receivers = [], senders = [], addresses = [];
+        $.ajax({
+            url: "http://127.0.0.1:8000/api/1/incomes/info/",
+            type: "GET",
+            dataType: 'json',
+        })
+        .done(function(response){
+            for (let i of response){
+                if(!receivers.includes(i[0])) receivers.push(i[0]);
+                if(!senders.includes(i[1])) senders.push(i[1]);
+                if(!addresses.includes(i[2])) addresses.push(i[2]);
+            }
+        })
+        .fail(function(response){
+            console.log(response);
+        })
+        .always(function(){
+            loadIncomeTable();
+        });
 
         $(document).on('click', '.edit', function() {
             let i = 0;
@@ -83,6 +78,12 @@
                     }
                 } else if (i==4) {
                     $(this).html(content);
+                } else if(i==6) {
+                    $(this).html('<input list="receivers" value="' + content + '">' + generateDatalist(receivers, "receivers"));
+                } else if(i==7) {
+                    $(this).html('<input list="senders" value="' + content + '">' + generateDatalist(senders, "senders"));
+                } else if(i==8) {
+                    $(this).html('<input list="addresses" value="' + content + '">' + generateDatalist(addresses, "addresses"));
                 } else if (i==9) {
                     if (content == "Tại công ty"){
                         $(this).html('<select id="select_places"><option value="Tại công ty" selected="selected">Tại công ty</option><option value="Ngoài công ty">Ngoài công ty</option></select>');
@@ -119,7 +120,14 @@
                     data.push($('#select_accounts').val())
                     data.push($($(this).parent().siblings('td.data')[2]).html());
                 }
+                if (i==4) {
+                    if(!receivers.includes(content)) receivers.push(content);
+                }
+                if (i==5) {
+                    if(!senders.includes(content)) senders.push(content);
+                }
                 if (i==6) {
+                    if(!addresses.includes(content)) addresses.push(content);
                     data.push($('#select_places').val());
                 }
             });
@@ -178,6 +186,15 @@
             });
         }
 
+        function generateDatalist(list, id){
+            var datalist = '<datalist id="' + id + '">';
+            for (let v of list){
+                datalist += ('<option value="' + v + '">');
+            }
+            datalist += '</datalist>';
+            return datalist;
+        }
+
         function addRow() {
             var table = document.getElementById("myTable")
             var row = table.insertRow(1)
@@ -197,6 +214,12 @@
                     cell.innerHTML = '<select id="select_accounts" onchange="updateIncomeType(this)"><option value="141" selected="selected">141</option><option value="338">338</option><option value="511">511</option><option value="711">711</option></select>';
                 } else if (i==5){
                     cell.innerHTML = 'Thu hồi tạm ứng';
+                } else if (i==8) {
+                    cell.innerHTML = '<input list="receivers">' + generateDatalist(receivers, "receivers");
+                } else if (i==9) {
+                    cell.innerHTML = '<input list="senders">' + generateDatalist(senders, "senders");
+                } else if (i==10) {
+                    cell.innerHTML = '<input list="addresses">' + generateDatalist(addresses, "addresses");
                 } else if (i==11){
                     cell.innerHTML = '<select id="select_places"><option value="Tại công ty">Tại công ty</option><option value="Ngoài công ty">Ngoài công ty</option></select>';
                 } else {
