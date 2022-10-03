@@ -116,12 +116,19 @@ const showPage = (page) => {
             i += 1;
             const td = document.createElement('td');
             if (i==1){
-                td.className = "incomeId";
+                td.className = "generatedId";
                 td.innerHTML = field;
                 tr.appendChild(td);
                 return;
             }
-            if (i==2 || i==7){
+            if (i==2){
+                td.className = "generatedDate";
+                td.innerHTML = field;
+                tr.appendChild(td);
+                return;
+            }
+            if (i==7){
+                td.className = "generatedVoucher";
                 td.innerHTML = field;
                 tr.appendChild(td);
                 return;

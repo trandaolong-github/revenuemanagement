@@ -28,6 +28,7 @@ urlpatterns = [
     path('sign-out/', auth_views.LogoutView.as_view(next_page='/'), name='sign-out'),
 
     path('show-incomes/', views.show_incomes, name='show-incomes'),
+    path('search-incomes/', views.income_search, name='search-incomes'),
 
     path('create-expense/', views.create_expense, name='create-expense'),
     path('show-expenses/', views.show_expenses, name='show-expenses'),

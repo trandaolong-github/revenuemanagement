@@ -1,5 +1,5 @@
 from django import forms
-from revenuemanagementapp.models import Expense
+from revenuemanagementapp.models import Expense, Income
 
 
 class CreateExpenseForm(forms.ModelForm):
@@ -19,3 +19,16 @@ class CreateExpenseForm(forms.ModelForm):
             'company': "Công ty",
             'address': "Địa chỉ"
         }
+
+
+class IncomeSearchingForm(forms.Form):
+    RECEIVERS = [('', '-------')] + list(Income.objects.values_list('receiver', 'receiver').distinct())
+    # ACCOUNTS = [
+    #     ('', '------'),
+    #     ('141', '141'),
+    #     ('338', '338'),
+    #     ('511', '511'),
+    #     ('711', '711')
+    # ]
+    # account = forms.ChoiceField(choices=ACCOUNTS, label='Tài khoản', required=False)
+    receiver = forms.ChoiceField(choices=RECEIVERS, label='Người nhận tiền', required=False)

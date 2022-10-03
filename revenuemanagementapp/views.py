@@ -1,4 +1,7 @@
+from datetime import date, datetime, timedelta
+
 from django import forms
+from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.core import serializers
 from django.shortcuts import render, redirect, get_object_or_404
@@ -16,7 +19,7 @@ from rest_framework.response import Response
 
 from revenuemanagementapp.models import Income, Expense
 from revenuemanagementapp.serializers import IncomeSerializer, ExpenseSerializer
-from revenuemanagementapp.forms import CreateExpenseForm
+from revenuemanagementapp.forms import CreateExpenseForm, IncomeSearchingForm
 import logging
 
 # Get an instance of a logger
@@ -30,6 +33,10 @@ def show_incomes(request):
     return render(request, 'income.html')
 
 @login_required(login_url='/sign-in/')
+def show_expenses(request):
+    return render(request, 'expense.html')
+
+@login_required(login_url='/sign-in/')
 def create_expense(request):
     create_expense_form = CreateExpenseForm()
     if request.method == "POST":
@@ -40,15 +47,6 @@ def create_expense(request):
 
             return redirect(show_expenses)
     return render(request, 'create_expense.html', {'create_expense_form': create_expense_form})
-
-@login_required(login_url='/sign-in/')
-def show_expenses(request):
-    if request.user.is_superuser:
-        expenses = Expense.objects.order_by("-id").values()
-        return render(request, 'expense_admin.html', {"expenses": list(expenses)})
-
-    expenses = Expense.objects.order_by("-id")[:10]
-    return render(request, 'expense.html', {"expenses": expenses})
 
 @login_required(login_url='/sign-in/')
 @user_passes_test(lambda u:u.is_superuser, login_url='/')
@@ -214,3 +212,36 @@ class ExpenseDetail(GenericAPIView):
 def get_receivers_senders_addresses(request):
     data = Income.objects.values_list('receiver', 'sender', 'address').distinct()
     return Response(data)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def income_search(request):
+    queries = []
+    account = request.GET.get('account')
+    amount = request.GET.get('amount')
+    sender = request.GET.get('sender')
+    receiver = request.GET.get('receiver')
+    month = request.GET.get('month')
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+
+    if account:
+        queries.append(Q(account=account))
+    if amount:
+        queries.append(Q(amount=amount))
+    if sender:
+        queries.append(Q(sender=sender))
+    if receiver:
+        queries.append(Q(receiver=receiver))
+    if month:
+        queries.append(Q(created_at__month=month, created_at__year=date.today().year))
+    elif from_date and to_date:
+        from_date = datetime.strptime(from_date, "%Y-%m-%d")
+        to_date = datetime.strptime(to_date, "%Y-%m-%d")
+        queries.append(Q(created_at__range=[from_date, to_date + timedelta(days=1)]))
+    if queries:
+        result = Income.objects.filter(*queries).order_by('-id').values()
+        return Response(result)
+    else:
+        return Response()
