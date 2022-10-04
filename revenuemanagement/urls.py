@@ -30,9 +30,10 @@ urlpatterns = [
     path('show-incomes/', views.show_incomes, name='show-incomes'),
     path('search-incomes/', views.income_search, name='search-incomes'),
 
-    path('create-expense/', views.create_expense, name='create-expense'),
     path('show-expenses/', views.show_expenses, name='show-expenses'),
-    path('edit-expense/<int:expense_id>/', views.edit_expense, name='edit-expense'),
+    path('search-expenses/', views.expense_search, name='search-expenses'),
+
+    path('show-incomes-expenses/', views.show_incomes_expenses, name='show-incomes-expenses'),
 
     path('change-password/', views.change_password, name='change-password'),
     path('management/', views.management_home, name='management-home'),
@@ -40,7 +41,7 @@ urlpatterns = [
 
     path('api/1/incomes/', views.IncomeList.as_view(), name="income-index"),
     path('api/1/incomes/<int:pk>/', views.IncomeDetail.as_view(), name="income-detail"),
-    path('api/1/incomes/info/', views.get_receivers_senders_addresses, name="income-info"),
+    path('api/1/<str:_type>/info/', views.get_receivers_senders_addresses, name="info"),
     path('api/1/expenses/', views.ExpenseList.as_view(), name="expense-index"),
     path('api/1/expenses/<int:pk>/', views.ExpenseDetail.as_view(), name="expense-detail"),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

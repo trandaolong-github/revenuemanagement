@@ -1,67 +1,500 @@
 {% extends 'base.html' %}
+{% load bootstrap4 %}
 
-<!-- {% block script %}
-<script>
-function myrefresh() {
-    window.location.reload();
-}
-setTimeout('myrefresh()', 5000);
+{% block title %}Sổ chi tiền mặt{% endblock %}
+
+{% block heading %}Sổ chi tiền mặt{% endblock %}
+{% block script %}
+<script> 
+    var receivers = [], senders = [], addresses = [];
+    $.ajax({
+        url: "http://127.0.0.1:8000/api/1/expenses/info/",
+        type: "GET",
+        dataType: 'json',
+    })
+    .done(function(response){
+        for (let i of response){
+            if(!receivers.includes(i[0])) receivers.push(i[0]);
+            if(!senders.includes(i[1])) senders.push(i[1]);
+            if(!addresses.includes(i[2])) addresses.push(i[2]);
+        }
+    })
+    .fail(function(response){
+        console.log(response);
+    })
+    .always(function(){
+        loadExpenseTable();
+        createInputSearchSender();
+        createInputSearchReceiver();
+    });
+
+    function createInputSearchSender(){
+        var searchObject = document.getElementById("searchSender");
+        searchObject.innerHTML = '<label for="inputSender">Người chi tiền</label><input id="inputSender" class="form-control" list="senders" value="" placeholder="Người chi tiền">' + generateDatalist(senders, "senders");
+    }
+
+    function createInputSearchReceiver(){
+        var searchObject = document.getElementById("searchReceiver");
+        searchObject.innerHTML = '<label for="inputReceiver">Người nhận tiền</label><input id="inputReceiver" class="form-control" list="receivers" value="" placeholder="Người nhận tiền">' + generateDatalist(receivers, "receivers");
+    }
+
+    function toggle() {
+        var x = document.getElementById("searchForm");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+            
+        }
+    }
+
+    $(document).on('click', '.edit', function() {
+        let i = 0;
+        $(this).parent().siblings('td.data').each(function() {
+            i += 1;
+            content = $(this).html();
+            if (i==5){
+                $(this).html('<input class="inputRow" type="date" value="' + content + '" />');
+            } else if (i==3) {
+                if (content == "112"){
+                    $(this).html(`<select id="select_accounts" onchange="updateExpenseType(this)">
+                                  <option value="112" selected="selected">112</option>
+                                  <option value="138">138</option>
+                                  <option value="141">141</option>
+                                  <option value="621">621</option>
+                                  <option value="622">622</option>
+                                  <option value="627">627</option>
+                                  <option value="642">642</option>
+                                  </select>`);
+                } else if (content == "138"){
+                    $(this).html(`<select id="select_accounts" onchange="updateExpenseType(this)">
+                                  <option value="112">112</option>
+                                  <option value="138" selected="selected">138</option>
+                                  <option value="141">141</option>
+                                  <option value="621">621</option>
+                                  <option value="622">622</option>
+                                  <option value="627">627</option>
+                                  <option value="642">642</option>
+                                  </select>`);
+                } else if (content == "141"){
+                    $(this).html(`<select id="select_accounts" onchange="updateExpenseType(this)">
+                                  <option value="112">112</option>
+                                  <option value="138">138</option>
+                                  <option value="141" selected="selected">141</option>
+                                  <option value="621">621</option>
+                                  <option value="622">622</option>
+                                  <option value="627">627</option>
+                                  <option value="642">642</option>
+                                  </select>`);
+                } else if (content == "621"){
+                    $(this).html(`<select id="select_accounts" onchange="updateExpenseType(this)">
+                                  <option value="112">112</option>
+                                  <option value="138">138</option>
+                                  <option value="141">141</option>
+                                  <option value="621" selected="selected">621</option>
+                                  <option value="622">622</option>
+                                  <option value="627">627</option>
+                                  <option value="642">642</option>
+                                  </select>`);
+                } else if (content == "622"){
+                    $(this).html(`<select id="select_accounts" onchange="updateExpenseType(this)">
+                                  <option value="112">112</option>
+                                  <option value="138">138</option>
+                                  <option value="141">141</option>
+                                  <option value="621">621</option>
+                                  <option value="622" selected="selected">622</option>
+                                  <option value="627">627</option>
+                                  <option value="642">642</option>
+                                  </select>`);
+                } else if (content == "627"){
+                    $(this).html(`<select id="select_accounts" onchange="updateExpenseType(this)">
+                                  <option value="112">112</option>
+                                  <option value="138">138</option>
+                                  <option value="141">141</option>
+                                  <option value="621">621</option>
+                                  <option value="622">622</option>
+                                  <option value="627" selected="selected">627</option>
+                                  <option value="642">642</option>
+                                  </select>`);
+                } else if (content == "642"){
+                    $(this).html(`<select id="select_accounts" onchange="updateExpenseType(this)">
+                                  <option value="112">112</option>
+                                  <option value="138">138</option>
+                                  <option value="141">141</option>
+                                  <option value="621">621</option>
+                                  <option value="622">622</option>
+                                  <option value="627">627</option>
+                                  <option value="642" selected="selected">642</option>
+                                  </select>`);
+                }
+            } else if (i==4) {
+                $(this).html(content);
+            } else if(i==6) {
+                $(this).html('<input class="inputRow" list="senders" value="' + content + '">' + generateDatalist(senders, "senders"));
+            } else if(i==7) {
+                $(this).html('<input class="inputRow" list="receivers" value="' + content + '">' + generateDatalist(receivers, "receivers"));
+            } else if(i==8) {
+                $(this).html('<input class="inputRow" list="addresses" value="' + content + '">' + generateDatalist(addresses, "addresses"));
+            } else if (i==9) {
+                if (content == "Tại công ty"){
+                    $(this).html('<select id="select_places"><option value="Tại công ty" selected="selected">Tại công ty</option><option value="Ngoài công ty">Ngoài công ty</option></select>');
+                } else {
+                    $(this).html('<select id="select_places"><option value="Tại công ty">Tại công ty</option><option value="Ngoài công ty" selected="selected">Ngoài công ty</option></select>');
+                }
+            } else {
+                $(this).html('<input class="inputRow" value="' + content + '" />');
+            }
+        });
+        $(this).siblings('.save').show();
+        $(this).siblings('.delete').hide();
+        $(this).hide();
+    });
+
+    $(document).on('click', '.save', function() {
+        var interupt = false;
+        var data = [this];
+        let i = 0;
+        $('.inputRow').each(function() {
+            i += 1;
+            var content = $(this).val();
+            if (content == ''){
+                if (i != 3){
+                    alert("Còn ô trống chưa điền !!!");
+                    interupt = true;
+                    return false;
+                } else {
+                    content = null;
+                }
+            }
+            data.push(content);
+            if (i==2){
+                data.push($('#select_accounts').val())
+                data.push($($(this).parent().siblings('td.data')[2]).html());
+            }
+            if (i==4) {
+                if(!senders.includes(content)) senders.push(content);
+                createInputSearchSender();
+            }
+            if (i==5) {
+                if(!receivers.includes(content)) receivers.push(content);
+                createInputSearchReceiver();
+            }
+            if (i==6) {
+                if(!addresses.includes(content)) addresses.push(content);
+                data.push($('#select_places').val());
+            }
+        });
+        if (interupt){
+            return false;
+        }
+        sendToServer.apply(this, data);
+    });
+
+    $(document).on('click', '.delete', function() {
+        $(this).parents('tr').remove();
+    });
+
+    function updateExpenseType(element) {
+        var updatedValue;
+        var value = $('#select_accounts').val();
+        if (value == "112"){
+            updatedValue = "Nộp tiền vào tk ngân hàng";
+        } else if (value == "138"){
+            updatedValue = "Phải thu khác";
+        } else if (value == "141"){
+            updatedValue = "Tạm ứng";
+        } else if (value == "621"){
+            updatedValue = "Chi phí NVL trực tiếp";
+        } else if (value == "622"){
+            updatedValue = "Chi phí tiền lương trực tiếp";
+        } else if (value == "627"){
+            updatedValue = "Chi phí sản xuất chung";
+        } else if (value == "642"){
+            updatedValue = "Chi phí quản lý DN";
+        }
+        $($(element).parent().siblings('td.data')[2]).html(updatedValue);
+    }
+
+    function sendToServer(saveElement, content, amount, account, expense_type, receiving_date, sender, receiver, address, place){
+        var generatedId = $(saveElement).parent().siblings('td.generatedId').html()
+        var url, type;
+        if (generatedId) {
+            url = "http://127.0.0.1:8000/api/1/expenses/" + generatedId + "/";
+            type = "PUT";
+        }
+        else {
+            url = "http://127.0.0.1:8000/api/1/expenses/";
+            type = "POST";
+            document.getElementById("myTable").deleteRow(1);
+        }
+        $.ajax({
+            url: url,
+            type: type,
+            data: {
+                content:content, amount:amount, account:account, expense_type:expense_type,
+                receiving_date:receiving_date, receiver:receiver, sender:sender, address:address, place:place
+            },
+            headers: { "X-CSRFToken": '{{csrf_token}}' },
+        })
+        .done(function(response){
+            if(generatedId){
+                var generatedDate = $(saveElement).parent().siblings('td.generatedDate').html();
+                var generatedVoucher = $(saveElement).parent().siblings('td.generatedVoucher').html();
+                var buttonGroup = '<a class="btn save"> Lưu </a><a class="btn delete"> Xóa </a><a class="btn edit"> Sửa </a>';
+                var data = [generatedId, generatedDate, content, amount, account, expense_type, generatedVoucher, receiving_date, sender, receiver, address, place];
+                var i = 0;
+                $(saveElement).parent().siblings('td').each(function() {
+                    $(this).html(data[i]);
+                    i += 1;
+                })
+                $(saveElement).parent().html(buttonGroup);
+            } else{
+                loadExpenseTable();
+            }
+        })
+        .fail(function(response){
+            console.log(response);
+            alert("Có lỗi xảy ra, không thể lưu vô cơ sở dữ liệu !!!");
+        });
+    }
+
+    function generateDatalist(list, id){
+        var datalist = '<datalist id="' + id + '">';
+        for (let v of list){
+            datalist += ('<option value="' + v + '">');
+        }
+        datalist += '</datalist>';
+        return datalist;
+    }
+
+    function addRow() {
+        var table = document.getElementById("myTable")
+        var row = table.insertRow(1)
+        for (let i=0;i<2;i++)
+        {
+            var cell = row.insertCell(i);
+            cell.innerHTML = '';
+        }
+        for (let i=2;i<12;i++)
+        {
+            var cell = row.insertCell(i);
+            if (i==7){
+                cell.innerHTML = '<input class="inputRow" type="date" >';
+            } else if (i==6) {
+                cell.innerHTML = '';
+            } else if (i==4) {
+                cell.innerHTML = `<select id="select_accounts" onchange="updateExpenseType(this)">
+                                  <option value="112" selected="selected">112</option>
+                                  <option value="138">138</option>
+                                  <option value="141">141</option>
+                                  <option value="621">621</option>
+                                  <option value="622">622</option>
+                                  <option value="627">627</option>
+                                  <option value="642">642</option>
+                                  </select>`;
+            } else if (i==5){
+                cell.innerHTML = 'Nộp tiền vào tk ngân hàng';
+            } else if (i==8) {
+                cell.innerHTML = '<input class="inputRow" list="senders">' + generateDatalist(senders, "senders");
+            } else if (i==9) {
+                cell.innerHTML = '<input class="inputRow" list="receivers">' + generateDatalist(receivers, "receivers");
+            } else if (i==10) {
+                cell.innerHTML = '<input class="inputRow" list="addresses">' + generateDatalist(addresses, "addresses");
+            } else if (i==11){
+                cell.innerHTML = '<select id="select_places"><option value="Tại công ty">Tại công ty</option><option value="Ngoài công ty">Ngoài công ty</option></select>';
+            } else {
+                cell.innerHTML = '<input class="inputRow" value="'+'" />';
+            }
+            cell.className = "data"
+        }
+        cell = row.insertCell(12)
+        cell.className = "buttonsBlock"
+        cell.innerHTML = `<a class="btn save" style="display:inline"> Lưu </a>
+                          <a class="btn delete" style="display:inline"> Xóa </a>
+                          <a class="btn edit" style="display:none"> Sửa </a>`
+    }
+
+    function loadExpenseTable() {
+        let data = [];
+        $.ajax({
+            url: "http://127.0.0.1:8000/api/1/expenses/",
+            type: "GET",
+            dataType: 'json',
+        })
+        .done(function(response){
+            for(let i of response){
+                let row = { 
+                    "Mã Số ": i.id,
+                    "Ngày tạo": (new Date(i.created_at)).toLocaleString(),
+                    "Nội dung chi tiền": i.content,
+                    "Số tiền": i.amount,
+                    "Tài khoản đối ứng": i.account,
+                    "Loại chi phí": i.expense_type,
+                    "Số chứng từ": i.accounting_voucher,
+                    "Ngày chi tiền": i.sending_date,
+                    "Người trực tiếp chi tiền": i.sender,
+                    "Họ tên người nhận tiền": i.receiver,
+                    "Địa chỉ": i.address,
+                    "Chi tiền tại": i.place,
+                    "": "button",
+                }
+                data.push(row);
+            }
+
+            const options = {
+                tableId:'myTable',
+                currentPage:1,
+                perPage:10,
+                autoHeaders:false,
+                arrowUp:'⇑',
+                arrowDown:'⇓',
+                previousText:'&#10094',
+                nextText:'&#10095',
+            }
+    
+            setTable(data, options);
+        })
+        .fail(function(response){
+            console.log(response);
+        });
+    }
+
+    function searchExpense(){
+        var inputMonth = $('#inputMonth').val();
+        if (inputMonth && (isNaN(inputMonth) || inputMonth < 1 || inputMonth > 12)){
+            alert("Vui lòng nhập số từ 1 đến 12 hoặc để trống !!!");
+            return false;
+        }
+
+        $.ajax({
+            url: "http://127.0.0.1:8000/search-expenses/",
+            type: "GET",
+            data: {
+                account:$('#inputAccount').val(), amount:$('#inputAmount').val(), sender:$('#inputSender').val(), receiver:$('#inputReceiver').val(),
+                from_date:$('#inputFromDate').val(), to_date:$('#inputToDate').val(), month:inputMonth
+            },
+        })
+        .done(function(response){
+            let data= []
+            for(let i of response){
+                let row = { 
+                    "Mã Số ": i.id,
+                    "Ngày tạo": (new Date(i.created_at)).toLocaleString(),
+                    "Nội dung chi tiền": i.content,
+                    "Số tiền": i.amount,
+                    "Tài khoản đối ứng": i.account,
+                    "Loại chi phí": i.expense_type,
+                    "Số chứng từ": i.accounting_voucher,
+                    "Ngày chi tiền": i.sending_date,
+                    "Người trực tiếp chi tiền": i.sender,
+                    "Họ tên người nhận tiền": i.receiver,
+                    "Địa chỉ": i.address,
+                    "Chi tiền tại": i.place,
+                    "": "button",
+                }
+                data.push(row);
+            }
+
+            const options = {
+                tableId:'myTable',
+                currentPage:1,
+                perPage:10,
+                autoHeaders:false,
+                arrowUp:'⇑',
+                arrowDown:'⇓',
+                previousText:'&#10094',
+                nextText:'&#10095',
+            }
+    
+            setTable(data, options);
+        })
+        .fail(function(response){
+            console.log(response);
+        });
+    }
 </script>
-{% endblock %} -->
-
-{% block title %}Danh sách thu tiền{% endblock %}
-
-{% block heading %}Danh sách thu tiền{% endblock %}
+{% endblock %}
 
 {% block content %}
 <div class="panel">
     <div class="panel-body">
         <div class="text-left">
-            <a href="{% url 'create-expense' %}" class="btn btn-green">Thêm</a>
+            <a onclick="addRow()" class="btn btn-green">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+            </a>
+            <a onclick="toggle()" class="btn btn-green">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+            </a>
             <br/>
             <br/>
         </div>
-        <div style="overflow-x: auto;">
-            <table class="table table-bordered table-hover">
+
+        <form id="searchForm" style="display:none" onsubmit="searchExpense();return false">
+            <div class="form-row">
+              <div class="form-group col-md-3">
+                <label for="inputAccount">Tài khoản</label>
+                <input id="inputAccount" list="accounts" class="form-control" value='' placeholder="Tài khoản"><datalist id="accounts"><option value="112">112</option><option value="138">138</option><option value="141">141</option><option value="621">621</option><option value="622">622</option><option value="627">627</option><option value="642">642</option></select></datalist>
+              </div>
+              <div class="form-group col-md-3">
+                <label for="inputAmount">Số tiền</label>
+                <input id="inputAmount" class="form-control" value='' placeholder="Số tiền">
+              </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                  <label for="inputFromDate">Từ ngày</label>
+                  <input id="inputFromDate" type="date" class="form-control" value=''>
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="inputToDate">Đến ngày</label>
+                  <input id="inputToDate" type="date" class="form-control" value=''>
+                </div>
+            </div>
+            <div class="form-row">
+                <div id="searchSender" class="form-group col-md-3">
+                </div>
+                <div id="searchReceiver" class="form-group col-md-3">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="inputMonth">Tháng (của năm hiện hành)</label>
+                    <input id="inputMonth" class="form-control" value="">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-green">Tìm kiếm</button>
+        </form>
+
+        <div style="overflow-x: auto;height: 500px;;margin-top:20px;">
+            <table id="myTable" class="table table-bordered table-hover">
                 <thead>
                     <tr class="bg-gray text-black">
-                        <th>Mã số</th>
+                        <th>Mã Số </th>
                         <th>Ngày tạo</th>
                         <th>Nội dung chi tiền</th>
                         <th>Số tiền</th>
-                        <th>Tài khoản</th>
+                        <th>Tài khoản đối ứng</th>
                         <th>Loại chi phí</th>
-                        <th>Chứng từ</th>
-                        <th>Mã ngân sách</th>
-                        <th>Mã hợp đồng/công trình</th>
-                        <th>Chi nhánh</th>
-                        <th>Họ tên người nộp</th>
-                        <th>Công ty</th>
+                        <th>Số chứng từ</th>
+                        <th>Ngày chi tiền</th>
+                        <th>Người trực tiếp chi tiền</th>
+                        <th>Họ tên người nhận tiền</th>
                         <th>Địa chỉ</th>
+                        <th>Chi tiền tại</th>
+                        <th></th>
                     </tr>
                 </thead>
                 
                 <tbody>
-                    {% for expense in expenses %}
-                        <tr>
-                            <td>{{ expense.id }}</td>
-                            <td>{{ expense.created_at|date:"SHORT_DATE_FORMAT" }} {{ expense.created_at|time:"h:i a" }}</td>
-                            <td>{{ expense.content }}</td>
-                            <td>{{ expense.amount }}</td>
-                            <td>{{ expense.account }}</td>
-                            <td>{{ expense.expense_type }}</td>
-                            <td>{{ expense.accounting_voucher }}</td>
-                            <td>{{ expense.budget }}</td>
-                            <td>{{ expense.contract }}</td>
-                            <td>{{ expense.branch }}</td>
-                            <td>{{ expense.applicant }}</td>
-                            <td>{{ expense.company }}</td>
-                            <td>{{ expense.address }}</td>
-                        </tr>
-                    {% endfor %}
                 </tbody>
             </table>
         </div>
+        <div id="paginator"></div>
     </div>
 </div>
 {% endblock %}

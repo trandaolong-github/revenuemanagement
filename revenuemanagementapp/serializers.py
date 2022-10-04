@@ -53,25 +53,32 @@ class IncomeSerializer(serializers.ModelSerializer):
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
+    created_at = serializers.DateTimeField(required=False)
+    sending_date = serializers.DateField(required=False)
+    accounting_voucher = serializers.CharField(required=False, max_length=20)
     class Meta:
         model = models.Expense
         fields = (
+            'id',
+            'created_at',
             'content',
             'amount',
             'account',
             'expense_type',
             'accounting_voucher',
-            'budget',
-            'contract',
-            'branch',
-            'applicant',
-            'company',
+            'sending_date',
+            'sender',
+            'receiver',
             'address',
+            'place',
         )
 
     @transaction.atomic
     def create(self, validated_data):
         expense = models.Expense.objects.create(**validated_data)
+        expense.accounting_voucher = "C" + str(expense.id) + "/" + str(date.today().month) + "/" + str(date.today().year)
+        expense.save()
         return expense
 
     @transaction.atomic
@@ -81,12 +88,11 @@ class ExpenseSerializer(serializers.ModelSerializer):
         instance.account = validated_data.get("account", instance.account)
         instance.expense_type = validated_data.get("expense_type", instance.expense_type)
         instance.accounting_voucher = validated_data.get("accounting_voucher", instance.accounting_voucher)
-        instance.budget = validated_data.get("budget", instance.budget)
-        instance.contract = validated_data.get("contract", instance.contract)
-        instance.branch = validated_data.get("branch", instance.branch)
-        instance.applicant = validated_data.get("applicant", instance.applicant)
-        instance.company = validated_data.get("company", instance.company)
+        instance.sending_date = validated_data.get("sending_date", instance.sending_date)
+        instance.sender = validated_data.get("sender", instance.sender)
+        instance.receiver = validated_data.get("receiver", instance.receiver)
         instance.address = validated_data.get("address", instance.address)
+        instance.place = validated_data.get("place", instance.place)
 
         instance.save()
         return instance

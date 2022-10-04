@@ -16,12 +16,14 @@
 </head>
 {% url 'show-incomes' as show_incomes_url %}
 {% url 'show-expenses' as show_expenses_url %}
+{% url 'show-incomes-expenses' as show_incomes_expenses_url %}
 {% url 'management-home' as management_home_url %}
 {% url 'change-password' as change_password_url %}
 <body class="bg-white">
     <div class="topnav">
         <a href="{% url 'show-incomes' %}" class="{% if request.path == show_incomes_url %} active {% endif %}">Thu</a>
         <a href="{% url 'show-expenses' %}" class="{% if request.path == show_expenses_url %} active {% endif %}">Chi</a>
+        <a href="{% url 'show-incomes-expenses' %}" class="{% if request.path == show_incomes_expenses_url %} active {% endif %}">Tổng hợp</a>
         {% if request.user.is_superuser %}
         <a href="{% url 'management-home' %}" class="{% if request.path == management_home_url %} active {% endif %}">Quản trị</a>
         {% endif %}
