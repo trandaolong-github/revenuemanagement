@@ -10,7 +10,7 @@
     var receivers_expense = [], senders_expense = [], addresses_expense = [];
     var workingOnIncome = false;
     $.ajax({
-        url: "http://127.0.0.1:8000/api/1/incomes/info/",
+        url: "https://murmuring-basin-08296.herokuapp.com/api/1/incomes/info/",
         type: "GET",
         dataType: 'json',
     })
@@ -26,7 +26,7 @@
     })
     .always(function(){
         $.ajax({
-            url: "http://127.0.0.1:8000/api/1/expenses/info/",
+            url: "https://murmuring-basin-08296.herokuapp.com/api/1/expenses/info/",
             type: "GET",
             dataType: 'json',
         })
@@ -313,11 +313,11 @@
         var url, type;
         if (generatedVoucher) {
             let generatedId = generatedVoucher.split('/')[0].slice(1);
-            url = "http://127.0.0.1:8000/api/1/incomes/" + generatedId + "/";
+            url = "https://murmuring-basin-08296.herokuapp.com/api/1/incomes/" + generatedId + "/";
             type = "PUT";
         }
         else {
-            url = "http://127.0.0.1:8000/api/1/incomes/";
+            url = "https://murmuring-basin-08296.herokuapp.com/api/1/incomes/";
             type = "POST";
             document.getElementById("myTable").deleteRow(1);
         }
@@ -357,11 +357,11 @@
         var url, type;
         if (generatedVoucher) {
             let generatedId = generatedVoucher.split('/')[0].slice(1);
-            url = "http://127.0.0.1:8000/api/1/expenses/" + generatedId + "/";
+            url = "https://murmuring-basin-08296.herokuapp.com/api/1/expenses/" + generatedId + "/";
             type = "PUT";
         }
         else {
-            url = "http://127.0.0.1:8000/api/1/expenses/";
+            url = "https://murmuring-basin-08296.herokuapp.com/api/1/expenses/";
             type = "POST";
             document.getElementById("myTable").deleteRow(1);
         }
@@ -499,7 +499,7 @@
     function loadIncomeExpenseTable() {
         let data = [];
         $.ajax({
-            url: "http://127.0.0.1:8000/api/1/incomes-expenses/",
+            url: "https://murmuring-basin-08296.herokuapp.com/api/1/incomes-expenses/",
             type: "GET",
             dataType: 'json',
         })
@@ -569,7 +569,7 @@
         }
 
         $.ajax({
-            url: "http://127.0.0.1:8000/search-incomes-expenses/",
+            url: "https://murmuring-basin-08296.herokuapp.com/search-incomes-expenses/",
             type: "GET",
             data: {
                 account:$('#inputAccount').val(), amount:$('#inputAmount').val(), sender:$('#inputSender').val(), receiver:$('#inputReceiver').val(),

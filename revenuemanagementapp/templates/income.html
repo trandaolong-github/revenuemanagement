@@ -8,7 +8,7 @@
 <script> 
     var receivers = [], senders = [], addresses = [];
     $.ajax({
-        url: "http://127.0.0.1:8000/api/1/incomes/info/",
+        url: "https://murmuring-basin-08296.herokuapp.com/api/1/incomes/info/",
         type: "GET",
         dataType: 'json',
     })
@@ -157,11 +157,11 @@
         var generatedId = $(saveElement).parent().siblings('td.generatedId').html()
         var url, type;
         if (generatedId) {
-            url = "http://127.0.0.1:8000/api/1/incomes/" + generatedId + "/";
+            url = "https://murmuring-basin-08296.herokuapp.com/api/1/incomes/" + generatedId + "/";
             type = "PUT";
         }
         else {
-            url = "http://127.0.0.1:8000/api/1/incomes/";
+            url = "https://murmuring-basin-08296.herokuapp.com/api/1/incomes/";
             type = "POST";
             document.getElementById("myTable").deleteRow(1);
         }
@@ -249,7 +249,7 @@
     function loadIncomeTable() {
         let data = [];
         $.ajax({
-            url: "http://127.0.0.1:8000/api/1/incomes/",
+            url: "https://murmuring-basin-08296.herokuapp.com/api/1/incomes/",
             type: "GET",
             dataType: 'json',
         })
@@ -299,7 +299,7 @@
         }
 
         $.ajax({
-            url: "http://127.0.0.1:8000/search-incomes/",
+            url: "https://murmuring-basin-08296.herokuapp.com/search-incomes/",
             type: "GET",
             data: {
                 account:$('#inputAccount').val(), amount:$('#inputAmount').val(), sender:$('#inputSender').val(), receiver:$('#inputReceiver').val(),

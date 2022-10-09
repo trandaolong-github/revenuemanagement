@@ -8,7 +8,7 @@
 <script> 
     var receivers = [], senders = [], addresses = [];
     $.ajax({
-        url: "http://127.0.0.1:8000/api/1/expenses/info/",
+        url: "https://murmuring-basin-08296.herokuapp.com/api/1/expenses/info/",
         type: "GET",
         dataType: 'json',
     })
@@ -225,11 +225,11 @@
         var generatedId = $(saveElement).parent().siblings('td.generatedId').html()
         var url, type;
         if (generatedId) {
-            url = "http://127.0.0.1:8000/api/1/expenses/" + generatedId + "/";
+            url = "https://murmuring-basin-08296.herokuapp.com/api/1/expenses/" + generatedId + "/";
             type = "PUT";
         }
         else {
-            url = "http://127.0.0.1:8000/api/1/expenses/";
+            url = "https://murmuring-basin-08296.herokuapp.com/api/1/expenses/";
             type = "POST";
             document.getElementById("myTable").deleteRow(1);
         }
@@ -325,7 +325,7 @@
     function loadExpenseTable() {
         let data = [];
         $.ajax({
-            url: "http://127.0.0.1:8000/api/1/expenses/",
+            url: "https://murmuring-basin-08296.herokuapp.com/api/1/expenses/",
             type: "GET",
             dataType: 'json',
         })
@@ -375,7 +375,7 @@
         }
 
         $.ajax({
-            url: "http://127.0.0.1:8000/search-expenses/",
+            url: "https://murmuring-basin-08296.herokuapp.com/search-expenses/",
             type: "GET",
             data: {
                 account:$('#inputAccount').val(), amount:$('#inputAmount').val(), sender:$('#inputSender').val(), receiver:$('#inputReceiver').val(),
