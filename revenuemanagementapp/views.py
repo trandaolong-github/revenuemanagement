@@ -1,5 +1,3 @@
-from datetime import date, datetime, timedelta
-
 from django import forms
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -9,7 +7,10 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from django.http import Http404
 from django.utils.translation import gettext_lazy as _
+
+
 
 from rest_framework import permissions ,status
 from rest_framework.decorators import api_view, permission_classes
@@ -19,7 +20,11 @@ from rest_framework.response import Response
 
 from revenuemanagementapp.models import Income, Expense
 from revenuemanagementapp.serializers import IncomeSerializer, ExpenseSerializer
+
+from datetime import date, datetime, timedelta
+from itertools import chain
 import logging
+from operator import attrgetter
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -262,3 +267,56 @@ def expense_search(request):
         return Response(result)
     else:
         return Response()
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def income_expense_search(request):
+    queries_income = []
+    queries_expense = []
+    account = request.GET.get('account')
+    amount = request.GET.get('amount')
+    sender = request.GET.get('sender')
+    receiver = request.GET.get('receiver')
+    month = request.GET.get('month')
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+
+    if account:
+        queries_income.append(Q(account=account))
+        queries_expense.append(Q(account=account))
+    if amount:
+        queries_income.append(Q(amount=amount))
+        queries_expense.append(Q(amount=amount))
+    if sender:
+        queries_income.append(Q(sender=sender))
+        # sender of income in input search box is receiver of expense (Người nộp/nhận tiền)
+        queries_expense.append(Q(receiver=sender))
+    if receiver:
+        queries_income.append(Q(receiver=receiver))
+        # receiver of income in input search box is sender of expense (Người thu/chi tiền)
+        queries_expense.append(Q(sender=receiver))
+    if month:
+        queries_income.append(Q(created_at__month=month, created_at__year=date.today().year))
+        queries_expense.append(Q(created_at__month=month, created_at__year=date.today().year))
+    elif from_date and to_date:
+        from_date = datetime.strptime(from_date, "%Y-%m-%d")
+        to_date = datetime.strptime(to_date, "%Y-%m-%d")
+        queries_income.append(Q(created_at__range=[from_date, to_date + timedelta(days=1)]))
+        queries_expense.append(Q(created_at__range=[from_date, to_date + timedelta(days=1)]))
+    if queries_income: # Has queries_income also has queries_expense
+        result_income = Income.objects.filter(*queries_income).values()
+        result_expense = Expense.objects.filter(*queries_expense).values()
+        result = sorted(chain(result_income, result_expense), key=lambda instance:instance['created_at'], reverse=True)
+        return Response(result)
+    else:
+        return Response()
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_incomes_expenses(request):
+    expenses = Expense.objects.order_by('-id')[:15].values()
+    incomes = Income.objects.order_by('-id')[:15].values()
+    result = sorted(chain(incomes, expenses), key=lambda instance:instance['created_at'], reverse=True)
+    return Response(result)

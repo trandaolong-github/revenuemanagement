@@ -55,6 +55,8 @@
             content = $(this).html();
             if (i==5){
                 $(this).html('<input class="inputRow" type="date" value="' + content + '" />');
+            } else if(i==2){
+                $(this).html('<input class="inputRow" oninput="reformatNumber(this)" value="' + content + '" />');
             } else if (i==3) {
                 if (content == "112"){
                     $(this).html(`<select id="select_accounts" onchange="updateExpenseType(this)">
@@ -172,12 +174,16 @@
                 data.push($($(this).parent().siblings('td.data')[2]).html());
             }
             if (i==4) {
-                if(!senders.includes(content)) senders.push(content);
-                createInputSearchSender();
+                if(!senders.includes(content)){
+                   senders.push(content);
+                   createInputSearchSender();
+                }
             }
             if (i==5) {
-                if(!receivers.includes(content)) receivers.push(content);
-                createInputSearchReceiver();
+                if(!receivers.includes(content)){
+                    receivers.push(content);
+                    createInputSearchReceiver();
+                }
             }
             if (i==6) {
                 if(!addresses.includes(content)) addresses.push(content);
@@ -215,7 +221,7 @@
         $($(element).parent().siblings('td.data')[2]).html(updatedValue);
     }
 
-    function sendToServer(saveElement, content, amount, account, expense_type, receiving_date, sender, receiver, address, place){
+    function sendToServer(saveElement, content, amount, account, expense_type, sending_date, sender, receiver, address, place){
         var generatedId = $(saveElement).parent().siblings('td.generatedId').html()
         var url, type;
         if (generatedId) {
@@ -232,7 +238,7 @@
             type: type,
             data: {
                 content:content, amount:amount, account:account, expense_type:expense_type,
-                receiving_date:receiving_date, receiver:receiver, sender:sender, address:address, place:place
+                sending_date:sending_date, receiver:receiver, sender:sender, address:address, place:place
             },
             headers: { "X-CSRFToken": '{{csrf_token}}' },
         })
@@ -241,7 +247,7 @@
                 var generatedDate = $(saveElement).parent().siblings('td.generatedDate').html();
                 var generatedVoucher = $(saveElement).parent().siblings('td.generatedVoucher').html();
                 var buttonGroup = '<a class="btn save"> Lưu </a><a class="btn delete"> Xóa </a><a class="btn edit"> Sửa </a>';
-                var data = [generatedId, generatedDate, content, amount, account, expense_type, generatedVoucher, receiving_date, sender, receiver, address, place];
+                var data = [generatedId, generatedDate, content, amount, account, expense_type, generatedVoucher, sending_date, sender, receiver, address, place];
                 var i = 0;
                 $(saveElement).parent().siblings('td').each(function() {
                     $(this).html(data[i]);
@@ -280,6 +286,8 @@
             var cell = row.insertCell(i);
             if (i==7){
                 cell.innerHTML = '<input class="inputRow" type="date" >';
+            } else if(i==3){
+                cell.innerHTML = '<input class="inputRow" oninput="reformatNumber(this)" value="' + '" />';
             } else if (i==6) {
                 cell.innerHTML = '';
             } else if (i==4) {
@@ -438,7 +446,7 @@
             <div class="form-row">
               <div class="form-group col-md-3">
                 <label for="inputAccount">Tài khoản</label>
-                <input id="inputAccount" list="accounts" class="form-control" value='' placeholder="Tài khoản"><datalist id="accounts"><option value="112">112</option><option value="138">138</option><option value="141">141</option><option value="621">621</option><option value="622">622</option><option value="627">627</option><option value="642">642</option></select></datalist>
+                <input id="inputAccount" list="accounts" class="form-control" value='' placeholder="Tài khoản"><datalist id="accounts"><option value="112">112</option><option value="138">138</option><option value="141">141</option><option value="621">621</option><option value="622">622</option><option value="627">627</option><option value="642">642</option></datalist>
               </div>
               <div class="form-group col-md-3">
                 <label for="inputAmount">Số tiền</label>

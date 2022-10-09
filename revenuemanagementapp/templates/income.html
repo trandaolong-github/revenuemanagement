@@ -55,6 +55,8 @@
             content = $(this).html();
             if (i==5){
                 $(this).html('<input class="inputRow" type="date" value="' + content + '" />');
+            } else if(i==2){
+                $(this).html('<input class="inputRow" oninput="reformatNumber(this)" value="' + content + '" />');
             } else if (i==3) {
                 if (content == "141"){
                     $(this).html('<select id="select_accounts" onchange="updateIncomeType(this)"><option value="141" selected="selected">141</option><option value="338">338</option><option value="511">511</option><option value="711">711</option></select>');
@@ -110,12 +112,16 @@
                 data.push($($(this).parent().siblings('td.data')[2]).html());
             }
             if (i==4) {
-                if(!receivers.includes(content)) receivers.push(content);
-                createInputSearchReceiver();
+                if(!receivers.includes(content)){
+                    receivers.push(content);
+                    createInputSearchReceiver();
+                }
             }
             if (i==5) {
-                if(!senders.includes(content)) senders.push(content);
-                createInputSearchSender();
+                if(!senders.includes(content)){
+                    senders.push(content);
+                    createInputSearchSender();
+                }
             }
             if (i==6) {
                 if(!addresses.includes(content)) addresses.push(content);
@@ -212,6 +218,8 @@
             var cell = row.insertCell(i);
             if (i==7){
                 cell.innerHTML = '<input class="inputRow" type="date" >';
+            } else if(i==3){
+                cell.innerHTML = '<input class="inputRow" oninput="reformatNumber(this)" value="' + '" />';
             } else if (i==6) {
                 cell.innerHTML = '';
             } else if (i==4) {
@@ -362,7 +370,7 @@
             <div class="form-row">
               <div class="form-group col-md-3">
                 <label for="inputAccount">Tài khoản</label>
-                <input id="inputAccount" list="accounts" class="form-control" value='' placeholder="Tài khoản"><datalist id="accounts"><option value="141">141</option><option value="338">338</option><option value="511">511</option><option value="711">711</option></select></datalist>
+                <input id="inputAccount" list="accounts" class="form-control" value='' placeholder="Tài khoản"><datalist id="accounts"><option value="141">141</option><option value="338">338</option><option value="511">511</option><option value="711">711</option></datalist>
               </div>
               <div class="form-group col-md-3">
                 <label for="inputAmount">Số tiền</label>

@@ -33,6 +33,8 @@ urlpatterns = [
     path('show-expenses/', views.show_expenses, name='show-expenses'),
     path('search-expenses/', views.expense_search, name='search-expenses'),
 
+    path('search-incomes-expenses/', views.income_expense_search, name='search-incomes-expenses'),
+
     path('show-incomes-expenses/', views.show_incomes_expenses, name='show-incomes-expenses'),
 
     path('change-password/', views.change_password, name='change-password'),
@@ -44,4 +46,6 @@ urlpatterns = [
     path('api/1/<str:_type>/info/', views.get_receivers_senders_addresses, name="info"),
     path('api/1/expenses/', views.ExpenseList.as_view(), name="expense-index"),
     path('api/1/expenses/<int:pk>/', views.ExpenseDetail.as_view(), name="expense-detail"),
+
+    path('api/1/incomes-expenses/', views.get_incomes_expenses, name="income-expense-index"),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

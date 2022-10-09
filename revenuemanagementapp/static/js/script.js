@@ -222,3 +222,28 @@ const addColumnSorting = () => {
         header.addEventListener('click',()=>{sort(i)});
     })
 }
+
+function reformatNumber(element) {
+    // Current string value of the input
+    const value = element.value;
+
+    // Split the value string into an array on each decimal and 
+    // count the number of elements in the array
+    const decimalCount = value.split(`.`).length - 1;
+
+    // Don't do anything if a first decimal is entered
+    if (decimalCount === 1) return
+
+    // Remove any commas from the string and convert to a float
+    // This will remove any non digit characters and second decimals
+    const numericVal = parseFloat(value.replace(/,/g, ''));
+
+    //NumberFormat options
+    const options = {
+    style: `decimal`,
+    maximumFractionDigits: 20,
+    };
+
+    // Assign the formatted number to the input box
+    element.value = new Intl.NumberFormat(`en-US`, options).format(numericVal);
+}
