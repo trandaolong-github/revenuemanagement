@@ -1,0 +1,9 @@
+Django
+djangorestframework
+django-bootstrap4
+# These are only for heroku
+gunicorn
+Pillow
+whitenoise
+dj-database-url
+psycopg2-binary

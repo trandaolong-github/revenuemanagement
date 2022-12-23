@@ -15,5 +15,5 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'revenuemanagement.settings')
 
 application = get_wsgi_application()
 
-from whitenoise import WhiteNoise
-application = WhiteNoise(application)
+# from whitenoise import WhiteNoise
+# application = WhiteNoise(application)

@@ -128,6 +128,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-import dj_database_url
-db_from_env = dj_database_url.config()
-DATABASES['default'].update(db_from_env)
+# import dj_database_url
+# db_from_env = dj_database_url.config()
+# DATABASES['default'].update(db_from_env)
